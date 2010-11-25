@@ -1,0 +1,79 @@
+h1. Django NorwayGeo
+
+Django NorwayGeo is a reusable Django app for use in projects where you need to reference Norwegian administrative units, like municipality (kommune) and county (fylke) and get key information such as unique id and area polygon
+
+h2. Requirements
+
+*A full Django setup with GIS ("GeoDjango":http://docs.djangoproject.com/en/dev/ref/contrib/gis/tutorial/) enabled. This means you need "GDAL":http://docs.djangoproject.com/en/dev/ref/contrib/gis/install/#gdalbuild amongst other libraries. 
+
+Follow the instructions on the "GeoDjango installation site":http://docs.djangoproject.com/en/dev/ref/contrib/gis/install
+
+* Preferably a PostgreSQL databse with PostGIS
+
+h2. Install app
+
+# Make sure your GeoDjango setup is complete
+# Clone this repository to your disk and add the **norwaygeo**-folder to your Python path.
+# Add **norwaygeo** to your installed applications in your Django project's **settings.py** file:
+<pre>
+	INSTALLED_APPS = (
+	    'django.contrib.auth',
+	    'django.contrib.contenttypes',
+	    'django.contrib.sessions',
+	    'django.contrib.sites',
+	    'django.contrib.messages',
+	    'django.contrib.admin',
+	    'django.contrib.gis',
+	    'norwaygeo',
+	)
+</pre>
+
+# Sync your database by running the Django sync command. This will add table for the Kommune model:
+<pre>
+	python manage.py syncdb
+</pre>
+
+# In order to work with the spatial ref system the Norwegian Mappin Authority uses (UTM 33N) you need to add these to your PostGIS database. Run this command after adding norwaygeo to your installed applications: 
+
+<pre>
+	python manage.py addsrs
+</pre>
+
+# Load the shape file administrative borders data into your database by running this management command: 
+
+<pre>
+	python manage.py loadkommuner
+</pre>
+
+# Fire up your Django project with **runserver** and visit the admin site, and you will se a new model called **Kommune**
+
+# Create some apps of your own that refers to the Kommune model and you are good to go.
+
+h2. Run example project
+
+# Go to the folder **example_project** and run the following commands:
+
+# Create a database with the PostGIS template and put the settings (username etc) in the local_settings.py file.
+
+# Run the following commands to sync your DB, add the SRS and load the geodata:
+
+<pre>
+	python manage.py syncdb
+	python manage.py addsrs
+	python manage.py loadkommuner
+	python manage.py runserver
+</pre>
+	
+# Visit the admin of your new site to se the model named **Kommune**	
+
+
+h2. Map data / license
+
+The shape files included with django-norwaygeo are a modification of The Norwegian Mapping Authority's opendata shape files for Norwegian administrative levels. 
+
+They can be found here: http://www.statkart.no/?module=Articles;action=Article.publicShow;ID=15305
+and these files and the modified shape files included here are licensed under cc-by-sa-3.0. 
+
+Attribution should be: "Kartgrunnlag: Statens kartverk ("cc-by-sa-3.0":http://creativecommons.org/licenses/by-sa/3.0/no/)."
+
+

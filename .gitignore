@@ -1,0 +1,9 @@
+*.log
+*.pot
+example_project/local_settings.py
+*.pyc
+env/*
+.project
+.pydevproject
+.DS_Store
+.setttings/*
