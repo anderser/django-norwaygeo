@@ -6,7 +6,7 @@ h2. Requirements
 
 * A full Django setup with GIS ("GeoDjango":http://docs.djangoproject.com/en/dev/ref/contrib/gis/tutorial/) enabled. This means you need "GDAL":http://docs.djangoproject.com/en/dev/ref/contrib/gis/install/#gdalbuild amongst other libraries. Follow the instructions on the "GeoDjango installation site":http://docs.djangoproject.com/en/dev/ref/contrib/gis/install
 
-* Preferably a PostgreSQL databse with PostGIS
+* Preferably a PostgreSQL database with PostGIS
 
 h2. Install app
 
