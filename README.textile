@@ -1,6 +1,6 @@
 h1. Django NorwayGeo
 
-Django NorwayGeo is a reusable Django app for use in projects where you need to reference Norwegian administrative units, like municipality (kommune) and county (fylke) and get key information such as unique id and area polygon
+Django NorwayGeo is a reusable Django app for use in projects where you need to reference Norwegian administrative units, like municipality (kommune) and county (fylke) and get key information such as unique id and area multipolygon
 
 h2. Requirements
 
@@ -39,15 +39,21 @@ h2. Install app
 	python manage.py addsrs
 	</pre>
 
-6. Load the shape file administrative borders data into your database by running this management command: 
-
+6. Load the fylker fixture and shape file administrative borders data into your database by running this management command: 
+	
+	<pre>
+	python manage.py loaddata norwaygeo/fixtures/fylker.json
+	</pre>
+	
+	and then add kommuner by:
+	
 	<pre>
 	python manage.py loadkommuner
 	</pre>
 
-7. Fire up your Django project with **runserver** and visit the admin site, and you will se a new model called **Kommune**
+7. Fire up your Django project with **runserver** and visit the admin site, and you will se a new model called **Kommune** and **Fylke**
 
-8. Create some apps of your own that refers to the Kommune model and you are good to go.
+8. Create some apps of your own that refers to the Kommune model or the Fylke-model and you are good to go.
 
 h2. Run example project
 
@@ -60,11 +66,12 @@ h2. Run example project
 	<pre>
 	python manage.py syncdb
 	python manage.py addsrs
+	python manage.py loaddata ../norwaygeo/fixtures/fylker.json
 	python manage.py loadkommuner
 	python manage.py runserver
 	</pre>
 	
-# Visit the admin of your new site to se the model named **Kommune**	
+# Visit the admin of your new site to se the model named **Kommune** and **Fylke**	
 
 
 h2. Map data / license
