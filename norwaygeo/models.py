@@ -83,6 +83,30 @@ class Kommune(models.Model):
     
     objects = models.GeoManager()
     
+    
+    class Meta:
+        verbose_name_plural = 'kommuner'
+        ordering = ['komm_nr',]
+
+    def __unicode__(self):
+        
+        """
+        Some Norwegian kommuner have similar names. When displaying these
+        using __unicode__ fylke is added to the tekst returned for kommuner
+        that has similar names to other kommuner
+        """
+        
+        duplicates = [u'Os', u'Nes', u'Sande', u'Herøy', u'Våler', u'Bø']
+        if self.name in duplicates:
+            return self.name + u" (" + unicode(self.fylke) + u")"
+        else:
+            return self.name
+    
+    def save(self, *args, **kwargs):
+        self.komm_ssb_code = self.get_ssb_code()
+        unique_slugify(self, self.name, slug_field_name='slug')
+        super(Kommune, self).save(*args, **kwargs) 
+        
     def get_ssb_code(self):
         
         """
@@ -109,29 +133,15 @@ class Kommune(models.Model):
         """
         
         return self.geom.transform(4326, clone=True).kml
-
-    class Meta:
-        verbose_name_plural = 'kommuner'
-        ordering = ['komm_nr',]
-
-    def __unicode__(self):
-        
-        """
-        Some Norwegian kommuner have similar names. When displaying these
-        using __unicode__ fylke is added to the tekst returned for kommuner
-        that has similar names to other kommuner
-        """
-        
-        duplicates = [u'Os', u'Nes', u'Sande', u'Herøy', u'Våler', u'Bø']
-        if self.name in duplicates:
-            return self.name + u" (" + unicode(self.fylke) + u")"
-        else:
-            return self.name
     
-    def save(self, *args, **kwargs):
-        self.komm_ssb_code = self.get_ssb_code()
-        unique_slugify(self, self.name, slug_field_name='slug')
-        super(Kommune, self).save(*args, **kwargs) 
+    def adjacent_kommuner(self):
+        
+        """
+        Returns kommuner that has polygon which touches this kommune's polygon
+        """
+        
+        return Kommune.objects.filter(geom__touches=self.geom)
+
         
 # Auto-generated `LayerMapping` dictionary for Kommune model
 kommune_mapping = {
