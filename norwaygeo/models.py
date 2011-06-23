@@ -9,6 +9,29 @@ class FylkerNoAreasManager(models.GeoManager):
         return super(FylkerNoAreasManager, self).get_query_set().filter(isfylke=True)
 
 
+class PoliceDistrict(models.Model):
+    
+    district_nr = models.IntegerField(unique=True)
+    name = models.CharField(max_length=32)
+    geom = models.MultiPolygonField(srid=32633, blank=True, null=True)
+    geom_with_water = models.MultiPolygonField(srid=32633, blank=True, null=True)
+    
+    slug = models.SlugField(editable=True, blank=True)
+    
+    objects = models.GeoManager()
+    
+    
+    class Meta:
+        verbose_name_plural = 'politidistrikt'
+        ordering = ['district_nr',]
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+    def save(self, *args, **kwargs):
+        unique_slugify(self, self.name, slug_field_name='slug')
+        super(PoliceDistrict, self).save(*args, **kwargs) 
+
 class Fylke(models.Model):
     
     """
@@ -20,6 +43,8 @@ class Fylke(models.Model):
     name = models.CharField(max_length=32)
     fylke_ssb_code = models.CharField(max_length=4, blank=True)
     geom = models.MultiPolygonField(srid=32633, blank=True, null=True)
+    geom_with_water = models.MultiPolygonField(srid=32633, blank=True, null=True)
+    
     slug = models.SlugField(editable=True, blank=True)
     
     """Some fylker are actually regions/other areas, """
@@ -77,8 +102,10 @@ class Kommune(models.Model):
     komm_ssb_code = models.CharField(max_length=4, blank=True)
     
     geom = models.MultiPolygonField(srid=32633, blank=True)
+    geom_with_water = models.MultiPolygonField(srid=32633, blank=True, null=True)
     
     fylke = models.ForeignKey(Fylke, blank=True, null=True)
+    police_district = models.ForeignKey(PoliceDistrict, blank=True, null=True)
     slug = models.SlugField(editable=True, blank=True)
     
     objects = models.GeoManager()
@@ -126,13 +153,18 @@ class Kommune(models.Model):
         else:
             return self.komm_nr // 10
     
-    def kml (self):
+    def kml (self, include_water=None):
         
         """
         Returns KML of the geom field in this model. For use in i.e. Google maps. Converted to EPSG 4326
         """
+        if include_water:
+            
+            return self.geom_with_water.transform(4326, clone=True).kml
         
-        return self.geom.transform(4326, clone=True).kml
+        else:
+            
+            return self.geom.transform(4326, clone=True).kml
     
     def adjacent_kommuner(self):
         
@@ -140,9 +172,11 @@ class Kommune(models.Model):
         Returns kommuner that has polygon which touches this kommune's polygon
         """
         
-        return Kommune.objects.filter(geom__touches=self.geom)
+        return Kommune.objects.filter(geom_with_water_touches=self.geom)
 
         
+
+    
 # Auto-generated `LayerMapping` dictionary for Kommune model
 kommune_mapping = {
                    
@@ -151,3 +185,4 @@ kommune_mapping = {
     'komm_nr' : 'KOMM',
     'geom' : 'MULTIPOLYGON',
 }
+

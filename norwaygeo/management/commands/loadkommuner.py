@@ -21,7 +21,7 @@ class Command(BaseCommand):
         
         print "Loading kommuner shape data"
         kommune_shp = os.path.abspath(os.path.join(os.path.dirname(__file__), 
-                                                   '../../data/admin-level-no-sea/admin-level-no-sea.shp'))
+                                                   '../../data/statens-kartverk-n5000/administrativ-flate-uten-hav-AGE.shp'))
 
         komm = LayerMapping(Kommune, kommune_shp, kommune_mapping,
                           transform=False, encoding='iso-8859-1')

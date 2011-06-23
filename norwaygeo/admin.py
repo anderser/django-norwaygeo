@@ -19,10 +19,12 @@ class StatkartGeoAdmin(admin.GeoModelAdmin):
 class KommuneAdmin(StatkartGeoAdmin):
     fieldsets = (
         (None, {
-            'fields': ('komm_nr', 'name', 'komm_ssb_code', 'slug', 'fylke', 'geom',)
+            'fields': ('komm_nr', 'name', 'komm_ssb_code', 'slug', 'fylke', 'police_district', 'geom',)
         }),
     )
+    list_display = ('komm_nr', 'name', 'fylke','police_district')
     
+    list_filter = ('police_district',)
     #map is no modifiable
     modifiable = False
     

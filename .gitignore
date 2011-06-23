@@ -6,4 +6,5 @@ env/*
 .project
 .pydevproject
 .DS_Store
-.setttings/*
+.settings/*
+example_project/pip-log.txt
